@@ -16,4 +16,12 @@ angular.module('starter', ['ionic'])
       StatusBar.styleDefault();
     }
   });
+
 })
+.controller('TodoCtrl', function($scope){
+    $scope.Tasks = [
+      { title : 'aaa'},
+      { title : 'bbb'},
+      { title : 'ccc'}
+    ];
+});

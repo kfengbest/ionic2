@@ -21,7 +21,7 @@
     <!-- your app's js -->
     <script src="js/app.js"></script>
   </head>
-  <body ng-app="starter">
+  <body ng-app="starter" ng-controller="TodoCtrl">
     <ion-side-menus>
       <!-- Center content -->
       <ion-side-menu-content>
@@ -31,8 +31,9 @@
         <ion-content>
           <!-- list and items-->
           <ion-list>
-            <ion-item>aaa</ion-item>
-            <ion-item>bbb</ion-item>
+            <ion-item ng-repeat="task in Tasks">
+              {{task.title}}
+            </ion-item>
           </ion-list>
         </ion-content>
       </ion-side-menu-content>
