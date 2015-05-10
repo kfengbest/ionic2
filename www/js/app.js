@@ -18,7 +18,39 @@ angular.module('starter', ['ionic'])
   });
 
 })
-.controller('TodoCtrl', function($scope, $ionicModal) {
+
+.factory('Projects', function(){
+  return {
+    all : function(){
+      var projectString = window.localStorage['projects'];
+      if (projectString) {
+        return angular.fromJson(projectString);
+      }
+      return [];
+    },
+
+    save : function(projects){
+      window.localStorage['projects'] = angular.toJson(projects);
+    },
+
+    newProject : function(projectTitle){
+      return {
+        title : projectTitle,
+        tasks : []
+      };
+    },
+
+    getLastActiveIndex : function(){
+      return parseInt(window.localStorage['lastActiveProject'] || 0);
+    },
+
+    setLastActiveIndex : function(index){
+      window.localStorage['lastActiveProject'] = index;
+    }
+  }
+})
+
+.controller('TodoCtrl', function($scope, $timeout, $ionicModal, Projects, $ionicSideMenuDelegate) {
   // No need for testing data anymore
   $scope.tasks = [];
 
@@ -48,4 +80,45 @@ angular.module('starter', ['ionic'])
   $scope.closeNewTask = function() {
     $scope.taskModal.hide();
   };
+
+  var createProject = function(title){
+    var newProject = Projects.newProject(title);
+    $scope.projects.push(newProject);
+    Projects.save($scope.projects);
+    $scope.selectProject(newProject, $scope.projects.length - 1);
+  };
+
+  $scope.projects = Projects.all();
+
+  $scope.activeProject = $scope.projects[Projects.getLastActiveIndex()];
+
+  $scope.newProject = function(){
+    var projectTitle = prompt('project name');
+    if (projectTitle) {
+      createProject(projectTitle);
+    }
+  };
+
+  $scope.selectProject = function(project, index){
+    $scope.activeProject = project;
+    Projects.setLastActiveIndex(index);
+    $ionicSideMenuDelegate.toggleLeft(false);
+  };
+
+  $scope.toggleProjects = function(){
+    $ionicSideMenuDelegate.toggleLeft();
+  };
+
+  $timeout(function(){
+    if ($scope.projects.length === 0) {
+      while(true){
+        var projectTitle = prompt('Your first project title');
+        if (projectTitle) {
+          createProject(projectTitle);
+          break;
+        }
+      }
+    }
+  });
+
 });
